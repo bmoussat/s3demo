@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  localstack:
+    image: localstack/localstack:0.10.3
+    ports:
+      - "4567-4585:4567-4585"      
+    environment:
+      - DEFAULT_REGION=eu-central-1
+      - SERVICES=s3:4572
+    network_mode: "host"
+    environment:
+      - AWS_REGION=eu-central-1
+    volumes:
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
