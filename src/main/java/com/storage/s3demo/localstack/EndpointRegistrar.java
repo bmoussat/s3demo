@@ -9,29 +9,27 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class EndpointRegistrar {
 
-  @Getter
-  @AllArgsConstructor
-  private enum Service {
+	@Getter
+	@AllArgsConstructor
+	private enum Service {
 
-    S3(ServiceName.S3, "http://localhost:4572");
+		S3(ServiceName.S3, "http://localhost:4572");
 
-    private String name;
-    private String defaultEndpoint;
+		private String name;
+		private String defaultEndpoint;
 
-  }
+	}
 
+	public static String getS3Endpoint() {
+		return getServiceEndpoint(Service.S3);
+	}
 
-  public static String getS3Endpoint() {
-    return getServiceEndpoint(Service.S3);
-  }
-
-
-  private static String getServiceEndpoint(final Service service) {
-    try {
-      return LocalstackDocker.INSTANCE.endpointForService(service.getName());
-    } catch (final Exception e) {
-      return service.getDefaultEndpoint();
-    }
-  }
+	private static String getServiceEndpoint(final Service service) {
+		try {
+			return LocalstackDocker.INSTANCE.endpointForService(service.getName());
+		} catch (final Exception e) {
+			return service.getDefaultEndpoint();
+		}
+	}
 
 }

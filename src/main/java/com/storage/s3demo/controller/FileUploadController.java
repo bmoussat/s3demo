@@ -21,30 +21,30 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 public class FileUploadController {
-	
-	@Autowired	
-	S3ObjectRepository s3ObjectRepository;
-	
+
+	@Autowired
+	private S3ObjectRepository s3ObjectRepository;
+
 	@Value("${localaws.s3-bucket.name}")
-	String bucketName;
-	
+	private String bucketName;
+
 	@GetMapping("/bucket/home")
-	public String homePage(Model model) {	
+	public String homePage(Model model) {
 		retrieveAllFiles(model);
 		return "home";
 	}
-	
+
 	@RequestMapping(value = "/bucket/upload", method = RequestMethod.POST)
 	public String uploadFile(Model model, @RequestParam("file") MultipartFile file) throws IOException {
 
-		log.info("uploading the file : "+file.getName());
-			if (!file.isEmpty()) {
-				String fileName = file.getOriginalFilename();
-				String fileType = file.getContentType();
-				InputStream is = file.getInputStream();
-				s3ObjectRepository.save(bucketName, fileName, is.readAllBytes(), fileType);
-			}
-		
+		log.info("uploading the file : " + file.getName());
+		if (!file.isEmpty()) {
+			String fileName = file.getOriginalFilename();
+			String fileType = file.getContentType();
+			InputStream is = file.getInputStream();
+			s3ObjectRepository.save(bucketName, fileName, is.readAllBytes(), fileType);
+		}
+
 		return "redirect:/bucket/home";
 	}
 

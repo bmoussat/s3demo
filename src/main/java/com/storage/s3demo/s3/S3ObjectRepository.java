@@ -34,30 +34,31 @@ public class S3ObjectRepository {
 	@Value("${localaws.region}")
 	private String region;
 
-  @Bean
-  public AmazonS3 localstackS3Client() {
-    return AmazonS3ClientBuilder.standard()
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(EndpointRegistrar.getS3Endpoint(), region))
-      .withClientConfiguration(new ClientConfiguration().withRequestTimeout(50000))
-      .disableChunkedEncoding()
-      .withPathStyleAccessEnabled(true)
-      .build();
-  }
-  
-  @SneakyThrows
-  public void save(final String bucketName, final String objectKey, final byte[] objectContent, final String objectContentType) { 
-    try (final InputStream byteArrayInputStream = new ByteArrayInputStream(objectContent)) {
-      final ObjectMetadata objectMetadata = new ObjectMetadata();
-      objectMetadata.setContentLength(objectContent.length);
-      objectMetadata.setContentType(objectContentType);
-      localstackS3Client().putObject(new PutObjectRequest(bucketName, objectKey, byteArrayInputStream, objectMetadata));
-    }
-  }
-  
-  @SneakyThrows
-  public List<String> getFilesNames(final String bucketName) {
-  	  ListObjectsV2Result result = localstackS3Client().listObjectsV2(bucketName);
-  	  List<S3ObjectSummary> objects = result.getObjectSummaries();
-  	  return     objects.stream().map(S3ObjectSummary::getKey).collect(Collectors.toList());
-  }
+	@Bean
+	private AmazonS3 localstackS3Client() {
+		return AmazonS3ClientBuilder.standard()
+				.withEndpointConfiguration(
+						new AwsClientBuilder.EndpointConfiguration(EndpointRegistrar.getS3Endpoint(), region))
+				.withClientConfiguration(new ClientConfiguration().withRequestTimeout(50000)).disableChunkedEncoding()
+				.withPathStyleAccessEnabled(true).build();
+	}
+
+	@SneakyThrows
+	public void save(final String bucketName, final String objectKey, final byte[] objectContent,
+			final String objectContentType) {
+		try (final InputStream byteArrayInputStream = new ByteArrayInputStream(objectContent)) {
+			final ObjectMetadata objectMetadata = new ObjectMetadata();
+			objectMetadata.setContentLength(objectContent.length);
+			objectMetadata.setContentType(objectContentType);
+			localstackS3Client()
+					.putObject(new PutObjectRequest(bucketName, objectKey, byteArrayInputStream, objectMetadata));
+		}
+	}
+
+	@SneakyThrows
+	public List<String> getFilesNames(final String bucketName) {
+		ListObjectsV2Result result = localstackS3Client().listObjectsV2(bucketName);
+		List<S3ObjectSummary> objects = result.getObjectSummaries();
+		return objects.stream().map(S3ObjectSummary::getKey).collect(Collectors.toList());
+	}
 }
