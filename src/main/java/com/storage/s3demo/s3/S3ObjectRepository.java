@@ -35,11 +35,12 @@ public class S3ObjectRepository {
 	private String region;
 
   @Bean
-  @ConditionalOnProperty(name = "localaws.enabled", havingValue = "false")
+//  @ConditionalOnProperty(name = "localaws.enabled", havingValue = "false")
   public AmazonS3 localstackS3Client() {
     return AmazonS3ClientBuilder.standard()
       .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(EndpointRegistrar.getS3Endpoint(), region))
       .withClientConfiguration(new ClientConfiguration().withRequestTimeout(50000))
+      .disableChunkedEncoding()
       .withPathStyleAccessEnabled(true)
       .build();
   }
